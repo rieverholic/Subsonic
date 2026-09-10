@@ -1,0 +1,48 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'          # Triggers on tags like v1.0.0, v2.3.1, etc.
+
+permissions:
+  contents: write   # Needed to create releases and upload assets
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21          # Change to 17 or 11 if needed
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build with Gradle
+        run: ./gradlew build --no-daemon
+
+      - name: Find the JAR
+        id: jar
+        run: |
+          # Looks for the main jar (excludes -sources, -javadoc, plain, etc.)
+          JAR=$(find build/libs -name "*.jar" ! -name "*-sources.jar" ! -name "*-javadoc.jar" ! -name "*-plain.jar" | head -n 1)
+          echo "jar_path=$JAR" >> $GITHUB_OUTPUT
+          echo "Found JAR: $JAR"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.jar.outputs.jar_path }}
+          generate_release_notes: true
+          # Optional: draft: true
+          # Optional: prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
