@@ -3,6 +3,8 @@ Version: 0.1.0
 
 A compatibility plugin to smoothly connect Velocity and a GTNH server
 
+Supported Velocity versions: 4.1.0+
+
 ### How to use
 
 1. Install Velocity and GTNH
