@@ -20,11 +20,7 @@ public record SubsonicConfig(
             @Comment("Fix dimension ID to prevent dimension mismatch.")
             @Setting(value = "fix-dim-overflow")
             boolean fixDimensionId
-    ) {
-        public Server {
-            fixDimensionId = true;
-        }
-    }
+    ) {}
 
     public SubsonicConfig() {
         this(List.of(new Server("", true)));
