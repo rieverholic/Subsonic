@@ -7,22 +7,13 @@ import io.netty.channel.ChannelOutboundHandlerAdapter;
 import io.netty.channel.ChannelPromise;
 import io.netty.util.AttributeKey;
 
-import java.util.Set;
-
 public class JoinGameAppendHandler extends ChannelOutboundHandlerAdapter {
 
     public static final AttributeKey<Integer> GTNH_DIM_ID = AttributeKey.valueOf("gtnh-dim-id");
 
-    private final Set<String> serverNames;
-
-    public JoinGameAppendHandler(Set<String> serverNames) {
-        this.serverNames = serverNames;
-    }
-
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
-        String serverName = VelocityInternals.getServerName(ctx.channel());
-        if (serverNames.contains(serverName) && msg instanceof ByteBuf buf) {
+        if (msg instanceof ByteBuf buf) {
             try {
                 tryAppendAndPass(ctx, buf, promise);
             } finally {
@@ -43,7 +34,6 @@ public class JoinGameAppendHandler extends ChannelOutboundHandlerAdapter {
             ByteBuf out = buf.alloc().buffer(buf.readableBytes() + 4);
             out.writeBytes(buf);
             out.writeInt(dimId);
-            buf.release();
             ctx.write(out, promise);
             return;
         }

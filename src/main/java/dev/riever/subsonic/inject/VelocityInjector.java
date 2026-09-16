@@ -52,7 +52,7 @@ public class VelocityInjector {
         ch.pipeline().addBefore(
                 VelocityInternals.Connections.MINECRAFT_ENCODER,
                 "dimension-id-appender",
-                new JoinGameAppendHandler(this.serverNames)
+                new JoinGameAppendHandler()
         );
     }
 }
