@@ -28,7 +28,7 @@ public final class DimensionPatchHandler extends ChannelOutboundHandlerAdapter {
         }
     }
 
-    public void tryPatchAndPass(ChannelHandlerContext ctx, ByteBuf buf, ChannelPromise promise) throws Exception {
+    private void tryPatchAndPass(ChannelHandlerContext ctx, ByteBuf buf, ChannelPromise promise) throws Exception {
         MinecraftPackets.VarInt id = MinecraftPackets.readVarInt(buf);
         if (id == null) {
             ctx.write(buf.retain(), promise);
@@ -57,6 +57,7 @@ public final class DimensionPatchHandler extends ChannelOutboundHandlerAdapter {
 
     @Override
     public void flush(ChannelHandlerContext ctx) {
+        // Velocity writes switch packets without flushing
         realDim = null;
         ctx.flush();
     }
