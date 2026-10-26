@@ -64,6 +64,16 @@ public final class VelocityInternals {
         return MinecraftPackets.isLegacyJoinGamePacket(proto, packetId);
     }
 
+    public static boolean isRespawnPacket(Channel ch, ByteBuf buf) {
+        MinecraftPackets.VarInt varInt = MinecraftPackets.readVarInt(buf);
+        if (varInt == null) {
+            return false;
+        }
+        int packetId = varInt.value();
+        MinecraftPackets.Protocol proto = VelocityInternals.getProtocol(ch, true);
+        return MinecraftPackets.isLegacyRespawnPacket(proto, packetId);
+    }
+
     public static String getServerName(Channel ch) {
         Object mc = ch.pipeline().get(Connections.HANDLER);
         if (mc == null) {

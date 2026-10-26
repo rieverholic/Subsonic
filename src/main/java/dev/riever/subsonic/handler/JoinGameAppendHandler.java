@@ -9,7 +9,7 @@ import io.netty.util.AttributeKey;
 
 public class JoinGameAppendHandler extends ChannelOutboundHandlerAdapter {
 
-    public static final AttributeKey<Integer> GTNH_DIM_ID = AttributeKey.valueOf("gtnh-dim-id");
+    public static final AttributeKey<Integer> GTNH_DIM_ID_JOINGAME = AttributeKey.valueOf("gtnh-dim-id");
 
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
@@ -26,7 +26,7 @@ public class JoinGameAppendHandler extends ChannelOutboundHandlerAdapter {
 
     private void tryAppendAndPass(ChannelHandlerContext ctx, ByteBuf buf, ChannelPromise promise) {
         if (VelocityInternals.isJoinGamePacket(ctx.channel(), buf)) {
-            Integer dimId = ctx.channel().attr(GTNH_DIM_ID).getAndSet(null);
+            Integer dimId = ctx.channel().attr(GTNH_DIM_ID_JOINGAME).getAndSet(null);
             if (dimId == null) {
                 ctx.write(buf.retain(), promise);
                 return;

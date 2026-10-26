@@ -27,4 +27,8 @@ public class MinecraftPackets {
     public static boolean isLegacyJoinGamePacket(Protocol proto, int packetId) {
         return proto != null && proto.version().equals("MINECRAFT_1_7_6") && proto.state().equals("PLAY") && proto.clientBound() && packetId == 0x01;
     }
+
+    public static boolean isLegacyRespawnPacket(Protocol proto, int packetId) {
+        return proto != null && proto.version().equals("MINECRAFT_1_7_6") && proto.state().equals("PLAY") && proto.clientBound() && packetId == 0x07;
+    }
 }

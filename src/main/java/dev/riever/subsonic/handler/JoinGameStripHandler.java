@@ -5,10 +5,13 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.AttributeKey;
 
 import java.util.Set;
 
 public final class JoinGameStripHandler extends ChannelInboundHandlerAdapter {
+
+    public static final AttributeKey<Boolean> GTNH_DIM_ID_JOINED = AttributeKey.valueOf("gtnh-dim-id-joined");
 
     private final Set<String> serverNames;
 
@@ -42,7 +45,11 @@ public final class JoinGameStripHandler extends ChannelInboundHandlerAdapter {
         }
         int dimIdStart = buf.writerIndex() - 4;
         int dimId = buf.getInt(dimIdStart);
-        serverChannel.attr(JoinGameAppendHandler.GTNH_DIM_ID).set(dimId);
+        if (serverChannel.attr(GTNH_DIM_ID_JOINED).getAndSet(true) == null) {
+            serverChannel.attr(JoinGameAppendHandler.GTNH_DIM_ID_JOINGAME).set(dimId);
+        } else {
+            serverChannel.attr(RespawnOverwriteHandler.GTNH_DIM_ID_RESPAWN).set(dimId);
+        }
         buf.writerIndex(dimIdStart);
         ctx.fireChannelRead(buf.retain());
     }

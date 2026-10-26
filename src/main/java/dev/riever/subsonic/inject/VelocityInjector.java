@@ -3,6 +3,7 @@ package dev.riever.subsonic.inject;
 import com.velocitypowered.api.proxy.ProxyServer;
 import dev.riever.subsonic.handler.JoinGameAppendHandler;
 import dev.riever.subsonic.handler.JoinGameStripHandler;
+import dev.riever.subsonic.handler.RespawnOverwriteHandler;
 import dev.riever.subsonic.protocol.VelocityInternals;
 import dev.riever.subsonic.util.ReflectionUtils;
 import org.slf4j.Logger;
@@ -53,6 +54,10 @@ public class VelocityInjector {
                 VelocityInternals.Connections.MINECRAFT_ENCODER,
                 "dimension-id-appender",
                 new JoinGameAppendHandler()
+        ).addBefore(
+                VelocityInternals.Connections.MINECRAFT_ENCODER,
+                "dimension-id-overwriter",
+                new RespawnOverwriteHandler()
         );
     }
 }
