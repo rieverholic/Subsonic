@@ -5,13 +5,10 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.util.AttributeKey;
 
 import java.util.Set;
 
 public final class JoinGameStripHandler extends ChannelInboundHandlerAdapter {
-
-    public static final AttributeKey<Boolean> GTNH_DIM_ID_JOINED = AttributeKey.valueOf("gtnh-dim-id-joined");
 
     private final Set<String> serverNames;
 
@@ -34,7 +31,7 @@ public final class JoinGameStripHandler extends ChannelInboundHandlerAdapter {
     }
 
     private void tryStripAndPass(ChannelHandlerContext ctx, ByteBuf buf) throws Exception {
-        if (buf.readableBytes() < 4 || !VelocityInternals.isJoinGamePacket(ctx.channel(), buf)) {
+        if (buf.readableBytes() < Integer.BYTES || !VelocityInternals.isJoinGamePacket(ctx.channel(), buf)) {
             ctx.fireChannelRead(buf.retain());
             return;
         }
@@ -43,13 +40,9 @@ public final class JoinGameStripHandler extends ChannelInboundHandlerAdapter {
             ctx.fireChannelRead(buf.retain());
             return;
         }
-        int dimIdStart = buf.writerIndex() - 4;
+        int dimIdStart = buf.writerIndex() - Integer.BYTES;
         int dimId = buf.getInt(dimIdStart);
-        if (serverChannel.attr(GTNH_DIM_ID_JOINED).getAndSet(true) == null) {
-            serverChannel.attr(JoinGameAppendHandler.GTNH_DIM_ID_JOINGAME).set(dimId);
-        } else {
-            serverChannel.attr(RespawnOverwriteHandler.GTNH_DIM_ID_RESPAWN).set(dimId);
-        }
+        serverChannel.attr(DimensionPatchHandler.GTNH_DIM_ID).set(dimId);
         buf.writerIndex(dimIdStart);
         ctx.fireChannelRead(buf.retain());
     }
