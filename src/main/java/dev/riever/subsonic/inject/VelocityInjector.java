@@ -1,9 +1,8 @@
 package dev.riever.subsonic.inject;
 
 import com.velocitypowered.api.proxy.ProxyServer;
-import dev.riever.subsonic.handler.JoinGameAppendHandler;
+import dev.riever.subsonic.handler.DimensionPatchHandler;
 import dev.riever.subsonic.handler.JoinGameStripHandler;
-import dev.riever.subsonic.handler.RespawnOverwriteHandler;
 import dev.riever.subsonic.protocol.VelocityInternals;
 import dev.riever.subsonic.util.ReflectionUtils;
 import org.slf4j.Logger;
@@ -29,7 +28,7 @@ public class VelocityInjector {
             Object cm = ReflectionUtils.get(this.server, "cm");
             Object proxyHolder = ReflectionUtils.invoke(cm, "getServerChannelInitializer");
             ChannelInitializer<?> original = (ChannelInitializer<?>) ReflectionUtils.invoke(proxyHolder, "get");
-            ChannelInitializer<Channel> wrapped = new WrappedChannelInitializer(original, this::dimensionIdAppender);
+            ChannelInitializer<Channel> wrapped = new WrappedChannelInitializer(original, this::dimensionIdPatcher);
             ReflectionUtils.invoke(proxyHolder, "set", ChannelInitializer.class, wrapped);
 
             Object backendHolder = ReflectionUtils.invoke(cm, "getBackendChannelInitializer");
@@ -44,20 +43,16 @@ public class VelocityInjector {
     private void dimensionIdStripper(Channel ch) {
         ch.pipeline().addBefore(
                 VelocityInternals.Connections.MINECRAFT_DECODER,
-                "dimension-id-stripper",
+                "gtnh-dim-id-stripper",
                 new JoinGameStripHandler(this.serverNames)
         );
     }
 
-    private void dimensionIdAppender(Channel ch) {
+    private void dimensionIdPatcher(Channel ch) {
         ch.pipeline().addBefore(
                 VelocityInternals.Connections.MINECRAFT_ENCODER,
-                "dimension-id-appender",
-                new JoinGameAppendHandler()
-        ).addBefore(
-                VelocityInternals.Connections.MINECRAFT_ENCODER,
-                "dimension-id-overwriter",
-                new RespawnOverwriteHandler()
+                "gtnh-dim-id-patcher",
+                new DimensionPatchHandler()
         );
     }
 }
