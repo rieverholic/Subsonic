@@ -1,5 +1,5 @@
 ## Subsonic
-Version: 0.2.0
+Version: 0.2.1
 
 A compatibility plugin to smoothly connect Velocity and a GTNH server
 
