@@ -25,19 +25,19 @@ public class VelocityInjector {
 
     public void inject() {
         try {
-            Object cm = ReflectionUtils.get(this.server, "cm");
-            Object proxyHolder = ReflectionUtils.invoke(cm, "getServerChannelInitializer");
-            ChannelInitializer<?> original = (ChannelInitializer<?>) ReflectionUtils.invoke(proxyHolder, "get");
-            ChannelInitializer<Channel> wrapped = new WrappedChannelInitializer(original, this::dimensionIdPatcher);
-            ReflectionUtils.invoke(proxyHolder, "set", ChannelInitializer.class, wrapped);
-
-            Object backendHolder = ReflectionUtils.invoke(cm, "getBackendChannelInitializer");
-            ChannelInitializer<?> backendOriginal = (ChannelInitializer<?>) ReflectionUtils.invoke(backendHolder, "get");
-            ChannelInitializer<Channel> backendWrapped = new WrappedChannelInitializer(backendOriginal, this::dimensionIdStripper);
-            ReflectionUtils.invoke(backendHolder, "set", ChannelInitializer.class, backendWrapped);
-        } catch (Throwable t) {
-            logger.error("Reflection error: ", t);
+            VelocityInternals.verify();
+        } catch (IllegalStateException e) {
+            logger.error("Failed to inject.", e);
+            return;
         }
+
+        ChannelInitializer<Channel> original = VelocityInternals.getServerInitializer(server);
+        ChannelInitializer<Channel> wrapped = new WrappedChannelInitializer(original, this::dimensionIdPatcher);
+        VelocityInternals.setServerInitializer(server, wrapped);
+
+        ChannelInitializer<Channel> backendOriginal = VelocityInternals.getBackendInitializer(server);
+        ChannelInitializer<Channel> backendWrapped = new WrappedChannelInitializer(backendOriginal, this::dimensionIdStripper);
+        VelocityInternals.setBackendInitializer(server, backendWrapped);
     }
 
     private void dimensionIdStripper(Channel ch) {
