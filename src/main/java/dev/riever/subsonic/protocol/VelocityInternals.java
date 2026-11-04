@@ -41,7 +41,11 @@ public final class VelocityInternals {
         if (!(vsc instanceof ServerConnection sc)) {
             return null;
         }
-        Object serverConn = invoke(Handles.PLAYER_GET_CONNECTION, sc.getPlayer());
+        Player player = sc.getPlayer();
+        if (player == null) {
+            return null;
+        }
+        Object serverConn = invoke(Handles.PLAYER_GET_CONNECTION, player);
         if (serverConn == null) {
             return null;
         }
@@ -135,7 +139,6 @@ public final class VelocityInternals {
 
     private static final class Handles {
         private static final String PKG = "com.velocitypowered.proxy.";
-        private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
         private static final MethodType GETTER = MethodType.methodType(Object.class, Object.class);
 
         static final Class<?> MINECRAFT_CONNECTION = load("connection.MinecraftConnection");

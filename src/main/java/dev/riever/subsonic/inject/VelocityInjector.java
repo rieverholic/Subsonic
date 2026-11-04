@@ -4,7 +4,6 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import dev.riever.subsonic.handler.DimensionPatchHandler;
 import dev.riever.subsonic.handler.JoinGameStripHandler;
 import dev.riever.subsonic.protocol.VelocityInternals;
-import dev.riever.subsonic.util.ReflectionUtils;
 import org.slf4j.Logger;
 
 import io.netty.channel.Channel;
