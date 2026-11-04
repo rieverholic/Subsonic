@@ -19,7 +19,7 @@ import dev.riever.subsonic.inject.VelocityInjector;
 @Plugin(
         id = "subsonic",
         name = "Subsonic",
-        version = "0.2.0",
+        version = BuildConstants.VERSION,
         url = "https://github.com/rieverholic/Subsonic",
         description = "Some compatibility layers for Velocity and modpacks.",
         authors = {"Riever"}

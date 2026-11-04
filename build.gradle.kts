@@ -25,3 +25,13 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
+
+val generateTemplates = tasks.register<Copy>("generateTemplates") {
+    description = "Generate build constants"
+    val props = mapOf("version" to project.version)
+    inputs.properties(props)
+    from(file("src/main/templates"))
+    into(layout.buildDirectory.dir("generated/sources/templates"))
+    expand(props)
+}
+sourceSets.main { java.srcDir(generateTemplates.map { it.outputs }) }
